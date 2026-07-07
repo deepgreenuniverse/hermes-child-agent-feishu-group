@@ -1,5 +1,7 @@
 # hermes-child-agent-feishu-group
 
+> [English version](README_EN.md)
+
 通过 Hermes Agent 子 agent 搭建飞书群聊机器人团队的 skill。AI 自动完成 profile 创建、SOUL.md 生成、launchd plist 安装 —— 你只需在飞书开放台创建应用并粘贴凭证。
 
 **支持任意 N 个角色**（最少 2 个）—— 角色名/数量都不写死，按需配置。实际上限取决于：飞书开放台允许的应用数、群机器人上限、LLM 上下文窗口能装下多少个同时活跃的 agent。
@@ -11,7 +13,7 @@
 
 ## 前置要求
 
-- macOS（使用 launchd）
+- macOS（使用 launchd）OR Linux（nohup / systemd）
 - [Hermes Agent](https://hermes-agent.nousresearch.com) 已安装到 `~/.hermes/`
 - 每个飞书应用发布版本并开启机器人能力
 
@@ -45,6 +47,8 @@
 
 4. AI 自动完成所有配置（profiles、SOUL.md、launchd plist、启动 gateway）
 
+完整文档：[`SKILL.md`](SKILL.md)
+
 ## 批量创建飞书应用（可选）
 
 如果不想在飞书开放台手动创建 N 个应用，启动本地工具一次性批量创建：
@@ -58,10 +62,6 @@ python3 feishu-multi-agent-setup.py
 按页面提示逐个扫码授权即可。完成后所有 app_id + app_secret 会显示在结果区，直接复制粘贴给 AI。
 
 > 此工具调用飞书 OAuth Device Flow 创建 PersonalAgent 类型应用，需要飞书账号具备创建权限。
-
-完整文档：[`SKILL.md`](SKILL.md)
-
-> [English version](README_EN.md)
 
 ## 许可证
 
