@@ -2,6 +2,8 @@
 
 通过 Hermes Agent 子 agent 搭建飞书群聊机器人团队的 skill。AI 自动完成 profile 创建、SOUL.md 生成、launchd plist 安装 —— 你只需在飞书开放台创建应用并粘贴凭证。
 
+**支持任意 N 个角色**（最少 2 个，上不封顶）—— 角色名/数量都不写死，按需配置。
+
 ```
 你 → PM（飞书）→ Plan → Dev → Plan 评审 → Test → PM 汇报
               全部走 delegate_task；飞书消息 = 外部通知

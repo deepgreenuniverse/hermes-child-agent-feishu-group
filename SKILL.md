@@ -1,6 +1,6 @@
 ---
 name: feishu-multi-agent-collaboration
-description: Set up 2-5 Hermes agents as Feishu group bots collaborating via delegate_task. Send App ID + App Secret to the AI; it provisions profiles, SOUL.md, and launchd plists automatically.
+description: Set up 2 or more Hermes agents as Feishu group bots collaborating via delegate_task. Send App ID + App Secret to the AI; it provisions profiles, SOUL.md, and launchd plists automatically. Roles are arbitrary — pick any naming and count.
 triggers:
   - feishu multi-agent setup
   - hermes feishu bot team
@@ -9,7 +9,19 @@ triggers:
 
 # Feishu Multi-Agent Collaboration
 
-Deploy 2-5 Hermes agents as a Feishu group bot team. The AI handles all provisioning — you only create the Feishu apps and paste credentials.
+## Background
+
+Hermes Agent is a personal AI agent that can run multiple independent profiles, each with its own gateway, SOUL.md, and conversation context. Normally profiles live in separate Feishu (or other IM) groups for isolation.
+
+When you need several agents to **collaborate inside one Feishu group** — e.g. PM dispatches a task to Plan, Plan writes a design for Dev, Dev writes code for Test, Test reports back to PM — you need N independent Feishu bots in the same group, each @mentioning the others by their real open_id.
+
+This skill provisions that setup:
+- Creates `~/.hermes/profiles/<role>/` for each role you specify
+- Writes per-profile `config.yaml`, `SOUL.md`, `.env`
+- Generates a shared `SOUL.md` template that knows every other role's open_id, so any agent in the group can @mention any other correctly
+- Starts each profile's gateway (macOS launchd / Linux nohup)
+
+You supply: N Feishu app credentials + chat_id. The AI does the rest.
 
 ## What you get
 
@@ -18,7 +30,9 @@ you → PM (Feishu) → Plan → Dev → Plan review → Test → PM report
               all via delegate_task; Feishu messages = external notifications
 ```
 
-Roles are flexible. Default 4:
+Default 4 roles (PM / Plan / Dev / Test) shown above — but you can have as few as 2 or as many as you want. Roles are not hardcoded: name them anything, count them however you like.
+
+Default role table (most users start here, but you can name any roles you want):
 
 | Role | Does | Doesn't |
 |------|------|---------|
@@ -27,7 +41,7 @@ Roles are flexible. Default 4:
 | Dev | implement per plan, fix bugs | design, test |
 | Test | functional test, verify, report | review, develop |
 
-Or 2-5 of anything (`pm,dev` minimum; rename freely).
+Role keys in env vars (`ROLES=pm,plan,dev` etc.) must be **lower-case** to match `${role}_NAME` / `${role}_APP_ID` lookups in `setup.sh`. Two profiles is the minimum, ten is fine — there's no upper bound beyond how many Feishu apps you can create.
 
 ## Setup (5 minutes)
 
