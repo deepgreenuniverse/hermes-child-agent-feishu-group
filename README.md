@@ -13,6 +13,15 @@
 - [Hermes Agent](https://hermes-agent.nousresearch.com) 已安装到 `~/.hermes/`
 - 每个飞书应用发布版本并开启机器人能力
 
+## 前置检查（必跑，缺一项就报错）
+
+- [ ] N 个飞书应用都已发版（[open.feishu.cn/app](https://open.feishu.cn/app) → 版本管理与发布）
+- [ ] 每个应用开启机器人能力、授权 `im:message` / `im:message.group_at_msg` / `im:message:send_as_bot` 三个 scope
+- [ ] N 个机器人全部加进目标群
+- [ ] 主 profile 的 `~/.hermes/config.yaml::model:` 块完整（`api_key` / `api_mode` / `base_url` / `default` / `provider` / `context_length` 都得有；跑 `hermes config show` 验证）
+- [ ] env var 命名遵循 `<PROVIDER>_API_KEY`：`provider=minimax-cn` → env 里写 `MINIMAX_CN_API_KEY`
+- [ ] Linux 主机若 `hermes-gateway.service` 在跑，先决定：停 systemd（只用 custom profiles）还是留着（会和自定义 profile 抢同一个 Feishu app_id lock）
+
 ## 快速开始
 
 1. 在 [open.feishu.cn/app](https://open.feishu.cn/app) 创建 N 个企业自建应用，开启机器人能力，发布版本

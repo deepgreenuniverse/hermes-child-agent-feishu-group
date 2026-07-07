@@ -11,9 +11,20 @@ you → PM (Feishu) → Plan → Dev → Plan review → Test → PM report
 
 ## Requirements
 
-- macOS (uses launchd)
+- macOS (uses launchd) OR Linux (nohup / systemd)
 - [Hermes Agent](https://hermes-agent.nousresearch.com) installed at `~/.hermes/`
 - Each Feishu app published with bot capability enabled
+
+## Pre-flight checklist
+
+Run these BEFORE running setup.sh. Each box unchecked = expected failure later.
+
+- [ ] All N apps have ≥1 published version ([open.feishu.cn/app](https://open.feishu.cn/app) → 版本管理与发布)
+- [ ] Bot capability enabled on each app, with scopes: `im:message`, `im:message.group_at_msg`, `im:message:send_as_bot`
+- [ ] All N bots added to the target group
+- [ ] Main profile's `~/.hermes/config.yaml::model:` block is full — has `api_key`, `api_mode`, `base_url`, `default`, `provider`, `context_length` (verify with `hermes config show`)
+- [ ] Env var naming follows `<PROVIDER>_API_KEY`: `provider=minimax-cn` → `MINIMAX_CN_API_KEY` in `~/.hermes/.env`
+- [ ] Linux hosts: if `hermes-gateway.service` is active, decide before setup — stop systemd (custom profiles only) or leave it (will conflict on the same Feishu app_id lock)
 
 ## Quickstart
 

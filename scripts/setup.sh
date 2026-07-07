@@ -104,18 +104,32 @@ for role in "${ROLES_ARRAY[@]}"; do
   PROFILE_HOME="$HERMES_HOME/profiles/$profile_name"
   mkdir -p "$PROFILE_HOME/logs" "$PROFILE_HOME/sessions"
 
-  # config.yaml
-  cat > "$PROFILE_HOME/config.yaml" << EOF
-home_channel:
-  platform: feishu
-  chat_id: $FEISHU_CHAT_ID
-model: $LLM_MODEL
-provider: $LLM_PROVIDER
-EOF
+  # config.yaml — copy full model block from main config so each profile has LLM ready
+  python3 -c "
+import yaml, sys
+src = yaml.safe_load(open('$MAIN_CONFIG')) or {}
+m = src.get('model')
+if not isinstance(m, dict):
+    m = {'provider': src.get('provider', ''), 'default': src.get('model', '')}
+out = {
+    'home_channel': {'platform': 'feishu', 'chat_id': '$FEISHU_CHAT_ID'},
+    'model': {
+        'provider': m.get('provider', '$LLM_PROVIDER'),
+        'default': m.get('default', '$LLM_MODEL'),
+        'api_key': m.get('api_key', ''),
+        'api_mode': m.get('api_mode', ''),
+        'base_url': m.get('base_url', ''),
+        'context_length': m.get('context_length', ''),
+    }
+}
+yaml.safe_dump(out, open('$PROFILE_HOME/config.yaml', 'w'), allow_unicode=True, sort_keys=False)
+"
 
   # .env
+  # ponytail: env var name follows <PROVIDER>_API_KEY convention, not hardcoded MINIMAX
+  api_key_env_var="$(echo "$LLM_PROVIDER" | tr '[:lower:]' '[:upper:]' | tr '-' '_')_API_KEY"
   cat > "$PROFILE_HOME/.env" << EOF
-MINIMAX_CN_API_KEY=$LLM_API_KEY
+${api_key_env_var}=$LLM_API_KEY
 FEISHU_APP_ID=$app_id
 FEISHU_APP_SECRET=$app_secret
 FEISHU_DOMAIN=feishu
@@ -123,6 +137,7 @@ FEISHU_CONNECTION_MODE=websocket
 FEISHU_GROUP_POLICY=open
 FEISHU_REQUIRE_MENTION=false
 FEISHU_ALLOW_BOTS=all
+FEISHU_ALLOW_ALL_USERS=true
 EOF
 
   # SOUL.md（内联模板，用引号heredoc防止变量被转义）

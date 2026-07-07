@@ -62,6 +62,29 @@ The AI will:
 
 LLM config inherits from main Hermes agent; override per role if needed.
 
+## Pre-flight checklist
+
+Run these BEFORE running `setup.sh`. Any unchecked box = expected failure later.
+
+**Feishu apps (per role):**
+- [ ] All N apps have ≥1 published version (`open.feishu.cn` → app → 版本管理与发布)
+- [ ] Bot capability enabled (应用能力 → 机器人)
+- [ ] Required scopes: `im:message`, `im:message.group_at_msg`, `im:message:send_as_bot`
+
+**Group:**
+- [ ] Group exists, all N bots added (群设置 → 群机器人)
+- [ ] Group `chat_id` copied (Settings → Group info)
+
+**Hermes Agent config (`~/.hermes/config.yaml`):**
+- [ ] `model:` block is full — has `api_key`, `api_mode`, `base_url`, `default`, `provider`, `context_length` (run `hermes config show` to verify)
+- [ ] Env var follows `<PROVIDER>_API_KEY` convention: `provider=minimax-cn` → `MINIMAX_CN_API_KEY=…` in `~/.hermes/.env`
+
+**Linux hosts running `hermes-gateway.service`:**
+- [ ] Decide before setup: stop systemd service (custom profiles only) OR leave it active (it will spawn a default gateway that competes for the same Feishu app_id, causing `app_lock` conflicts)
+  ```bash
+  systemctl status hermes-gateway   # check active state
+  ```
+
 ## Required checks before asking "why doesn't it work?"
 
 ```bash
@@ -102,6 +125,20 @@ grep oc_ ~/.hermes/profiles/<role>/channel_directory.json
 
 All three must reference the same group.
 
+## Failure modes — log pattern → grep → fix
+
+When a bot doesn't respond, scan logs in this order:
+
+| Symptom (in `profiles/<role>/logs/gateway.log`) | Grep | Fix |
+|---|---|---|
+| `Unauthorized user: ou_XXX` | `grep -h "Unauthorized" ~/.hermes/profiles/*/logs/gateway.log \| tail -20` | Single trusted user: add `FEISHU_ALLOWED_USERS=ou_XXX` to that profile's `.env`. Multi-bot: add `FEISHU_ALLOW_ALL_USERS=true` to **all** profile `.env` files, restart. |
+| `No LLM provider configured` or `provider: None` | `grep -h "No LLM provider\|provider.*None" ~/.hermes/profiles/*/logs/gateway.log` | Each profile's `config.yaml::model:` block is incomplete. Copy the full block from main config: `hermes config show \| grep -A 10 "^model:"`. `setup.sh` does this automatically — re-run it. |
+| Bot @s another bot, recipient gateway shows `Inbound group message received` then `Unauthorized` | `grep -B1 "Unauthorized" ~/.hermes/profiles/<recipient>/logs/gateway.log` | Second-layer auth check. `FEISHU_GROUP_POLICY=open` only opens the first layer; set `FEISHU_ALLOW_ALL_USERS=true` in all profiles. |
+| Short 200-char response that looks generic | `grep -h "RuntimeError" ~/.hermes/profiles/*/logs/gateway.log` | This is the gateway's fallback text, NOT the LLM's reply. Root cause is above (provider/model misconfigured). |
+| `app_id or app_secret is invalid` | `grep -h "invalid" ~/.hermes/profiles/*/logs/gateway.log` | Wrong credentials, OR another gateway holds the lock. Check `~/.local/state/hermes/gateway-locks/` and remove stale entries. |
+
+**Always run `hermes config check && hermes config show && hermes status` BEFORE reading logs** — most failures are config-not-runtime.
+
 ## Single-bot Feishu setup (default profile only)
 
 Skip the chain — just wire `default` profile to Feishu:
@@ -114,8 +151,9 @@ hermes gateway list
 
 If all three return values but the bot doesn't respond, run through the @mention checklist above — same root causes apply.
 
-## Stop everything
+## Stop / rollback
 
+**macOS** (launchd):
 ```bash
 for f in ~/Library/LaunchAgents/ai.hermes.gateway*.plist; do
   launchctl unload "$f" 2>/dev/null
@@ -124,16 +162,43 @@ ps aux | grep 'hermes_cli.main.*gateway' | grep -v grep | awk '{print $2}' | xar
 rm -f ~/.local/state/hermes/gateway-locks/*
 ```
 
+**Linux** (nohup / systemd):
+```bash
+pkill -9 -f 'hermes_cli.main.*gateway' 2>/dev/null
+sudo systemctl stop hermes-gateway 2>/dev/null   # if you started via install.sh
+rm -f ~/.local/state/hermes/gateway-locks/*
+```
+
+**Full rollback** (delete all profiles):
+```bash
+pkill -9 -f 'hermes_cli.main.*gateway' 2>/dev/null
+for p in pm-agent plan-agent dev-agent test-agent; do
+  hermes profile delete "$p" -y 2>/dev/null
+done
+rm -rf ~/.hermes/profiles/{pm,plan,dev,test}-agent
+# Edit ~/.hermes/config.yaml to remove FEISHU_* config if you added any
+```
+
 Verify clean: `ps aux | grep gateway | grep -v grep` returns nothing.
 
 ## Restart a gateway
 
-`hermes gateway restart` is not supported. Use launchd:
+`hermes gateway restart` is not supported.
 
+**macOS** (launchd):
 ```bash
 launchctl bootout gui/$(id -u)/ai.hermes.gateway-<profile> 2>&1
 sleep 2
 launchctl load ~/Library/LaunchAgents/ai.hermes.gateway-<profile>.plist
+```
+
+**Linux** (manual or systemd):
+```bash
+pkill -9 -f 'hermes_cli.main.*gateway.*<profile>' 2>/dev/null
+sleep 2
+nohup ~/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main \
+  gateway run --profile <profile> --replace \
+  > ~/.hermes/profiles/<profile>/logs/gateway.log 2>&1 &
 ```
 
 ## Get a bot's open_id (when you need it manually)
@@ -173,5 +238,5 @@ macOS. Hermes Agent installed. Each Feishu app published with bot capability ena
 ## Files
 
 - `SKILL.md` — this file
-- `scripts/setup.sh` — bulk profile creation + launchd plist install
+- `scripts/setup.sh` — bulk profile creation; cross-platform (macOS launchd + Linux nohup/systemd)
 - `scripts/feishu-multi-agent-setup.py` — OAuth device-flow helper (auto-fetches credentials)
