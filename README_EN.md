@@ -1,5 +1,7 @@
 # hermes-child-agent-feishu-group
 
+> [中文版](README.md)
+
 Deploy 2 or more [Hermes Agent](https://hermes-agent.nousresearch.com) profiles as a Feishu bot team. The AI handles profile creation, SOUL.md generation, and launchd plist install — you only create the Feishu apps and paste credentials.
 
 **Any N roles supported** (minimum 2, no hardcoded upper limit) — role names and count are not hardcoded. Real upper bound is set by Feishu's per-app / per-group bot caps and by how many concurrent agents your LLM context window can fit.
@@ -8,8 +10,6 @@ Deploy 2 or more [Hermes Agent](https://hermes-agent.nousresearch.com) profiles 
 you → PM (Feishu) → Plan → Dev → Plan review → Test → PM report
               all via delegate_task; Feishu messages = external notifications
 ```
-
-> [中文版](README.md)
 
 ## Requirements
 
