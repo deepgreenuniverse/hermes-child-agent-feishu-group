@@ -28,6 +28,17 @@
 2. 创建一个群聊，把 N 个机器人全部拉进群
 3. 把凭证发给 AI：
 
+   自己跑 setup.sh 时设小写 env var（角色名跟 ROLES 一致）：
+   ```bash
+   export ROLES="pm,plan,dev"
+   export pm_NAME="紫月"     pm_APP_ID="cli_xxx"     pm_APP_SECRET="xxx"
+   export plan_NAME="安妙依" plan_APP_ID="cli_xxx"  plan_APP_SECRET="xxx"
+   export dev_NAME="叶凡"    dev_APP_ID="cli_xxx"   dev_APP_SECRET="xxx"
+   export FEISHU_CHAT_ID="oc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   bash scripts/setup.sh
+   ```
+
+   或者把凭证发给 AI 让它跑：
    ```
    飞书群 chat_id：oc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
