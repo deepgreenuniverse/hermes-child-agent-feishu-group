@@ -41,7 +41,7 @@ Default role table (most users start here, but you can name any roles you want):
 | Dev | implement per plan, fix bugs | design, test |
 | Test | functional test, verify, report | review, develop |
 
-Role keys in env vars (`ROLES=pm,plan,dev` etc.) must be **lower-case** to match `${role}_NAME` / `${role}_APP_ID` lookups in `setup.sh`. Two profiles is the minimum, ten is fine — there's no upper bound beyond how many Feishu apps you can create.
+Role keys in env vars (`ROLES=pm,plan,dev` etc.) must be **lower-case** to match `${role}_NAME` / `${role}_APP_ID` lookups in `setup.sh`. Two profiles is the minimum. There's no hardcoded upper limit in this skill, but real-world ceiling is set by Feishu's per-app / per-group bot caps and by how many concurrent agents your LLM context window can handle.
 
 ## Setup (5 minutes)
 
