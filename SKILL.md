@@ -51,9 +51,9 @@ If running setup.sh yourself, set **lower-case** env vars (role key matches `ROL
 
 ```bash
 export ROLES="pm,plan,dev"
-export pm_NAME="紫月"     pm_APP_ID="cli_xxx"     pm_APP_SECRET="xxx"
-export plan_NAME="安妙依" plan_APP_ID="cli_xxx"  plan_APP_SECRET="xxx"
-export dev_NAME="叶凡"    dev_APP_ID="cli_xxx"   dev_APP_SECRET="xxx"
+export pm_NAME="PM"     pm_APP_ID="cli_xxx"     pm_APP_SECRET="xxx"
+export plan_NAME="Plan" plan_APP_ID="cli_xxx"    plan_APP_SECRET="xxx"
+export dev_NAME="Dev"   dev_APP_ID="cli_xxx"     dev_APP_SECRET="xxx"
 export FEISHU_CHAT_ID="oc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 bash scripts/setup.sh
 ```

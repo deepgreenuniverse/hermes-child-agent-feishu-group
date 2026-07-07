@@ -35,9 +35,9 @@ Run these BEFORE running setup.sh. Each box unchecked = expected failure later.
    Set env vars (lower-case, role key matches `ROLES`):
    ```bash
    export ROLES="pm,plan,dev"
-   export pm_NAME="Alice"     pm_APP_ID="cli_xxx"     pm_APP_SECRET="xxx"
-   export plan_NAME="Bob"     plan_APP_ID="cli_xxx"    plan_APP_SECRET="xxx"
-   export dev_NAME="Charlie"  dev_APP_ID="cli_xxx"     dev_APP_SECRET="xxx"
+   export pm_NAME="PM"     pm_APP_ID="cli_xxx"     pm_APP_SECRET="xxx"
+   export plan_NAME="Plan" plan_APP_ID="cli_xxx"    plan_APP_SECRET="xxx"
+   export dev_NAME="Dev"   dev_APP_ID="cli_xxx"     dev_APP_SECRET="xxx"
    export FEISHU_CHAT_ID="oc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
    bash scripts/setup.sh
    ```
