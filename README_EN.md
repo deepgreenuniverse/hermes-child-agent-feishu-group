@@ -30,6 +30,20 @@ you → PM (Feishu) → Plan → Dev → Plan review → Test → PM report
 
 4. The AI provisions everything (profiles, SOUL.md, launchd plists, gateways).
 
+## Batch-create Feishu apps (optional)
+
+If you'd rather skip manual app creation in Feishu's console, the bundled tool creates N apps via OAuth Device Flow:
+
+```bash
+cd scripts/
+python3 feishu-multi-agent-setup.py
+# Open http://127.0.0.1:8765 in your browser
+```
+
+Scan the QR codes on screen — once done, all `app_id` + `app_secret` pairs appear in the results panel, ready to paste to the AI.
+
+> Requires a Feishu account with permission to create PersonalAgent-type apps.
+
 Full docs: [`SKILL.md`](SKILL.md)
 
 ## License

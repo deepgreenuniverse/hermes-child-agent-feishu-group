@@ -28,6 +28,20 @@
 
 4. AI 自动完成所有配置（profiles、SOUL.md、launchd plist、启动 gateway）
 
+## 批量创建飞书应用（可选）
+
+如果不想在飞书开放台手动创建 N 个应用，启动本地工具一次性批量创建：
+
+```bash
+cd scripts/
+python3 feishu-multi-agent-setup.py
+# 浏览器打开 http://127.0.0.1:8765
+```
+
+按页面提示逐个扫码授权即可。完成后所有 app_id + app_secret 会显示在结果区，直接复制粘贴给 AI。
+
+> 此工具调用飞书 OAuth Device Flow 创建 PersonalAgent 类型应用，需要飞书账号具备创建权限。
+
 完整文档：[`SKILL.md`](SKILL.md)
 
 > [English version](README_EN.md)
