@@ -30,6 +30,8 @@
 
 完整文档：[`SKILL.md`](SKILL.md)
 
+> [English version](README_EN.md)
+
 ## 许可证
 
 MIT。详见 [LICENSE](LICENSE)。
