@@ -145,6 +145,7 @@ yaml.safe_dump(out, open('$PROFILE_HOME/config.yaml', 'w'), allow_unicode=True, 
 ${api_key_env_var}=$LLM_API_KEY
 FEISHU_APP_ID=$app_id
 FEISHU_APP_SECRET=$app_secret
+FEISHU_BOT_OPEN_ID=$open_id
 FEISHU_DOMAIN=feishu
 FEISHU_CONNECTION_MODE=websocket
 FEISHU_GROUP_POLICY=open
